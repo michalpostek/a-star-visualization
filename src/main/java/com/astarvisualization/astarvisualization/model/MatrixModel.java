@@ -1,7 +1,12 @@
 package com.astarvisualization.astarvisualization.model;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -12,13 +17,13 @@ public class MatrixModel {
     private static final int DEFAULT_START_COL = 0;
     private static final int DEFAULT_FINISH_ROW = 0;
     private static final int DEFAULT_FINISH_COL = SIZE - 1;
-    private final MatrixNode[][] matrix;
+    private final ObjectProperty<MatrixNode>[][] matrix;
 
     public MatrixModel() {
         matrix = createDefaultMatrix();
     }
 
-    public MatrixNode[][] getMatrix() {
+    public ObjectProperty<MatrixNode>[][] getMatrix() {
         return matrix;
     }
 
@@ -35,11 +40,11 @@ public class MatrixModel {
             return;
         }
 
-        MatrixNode sourceNode = matrix[sourceRow][sourceCol];
-        MatrixNode targetNode = matrix[targetRow][targetCol];
+        MatrixNode sourceNode = matrix[sourceRow][sourceCol].get();
+        MatrixNode targetNode = matrix[targetRow][targetCol].get();
 
-        matrix[sourceRow][sourceCol] = targetNode;
-        matrix[targetRow][targetCol] = sourceNode;
+        matrix[sourceRow][sourceCol].set(targetNode);
+        matrix[targetRow][targetCol].set(sourceNode);
     }
 
     public void handleCellClick(int row, int col) {
@@ -47,30 +52,30 @@ public class MatrixModel {
             return;
         }
 
-        MatrixNode newState = matrix[row][col] == MatrixNode.OBSTACLE ? MatrixNode.WALKABLE : MatrixNode.OBSTACLE;
-        matrix[row][col] = newState;
+        MatrixNode newState = matrix[row][col].get() == MatrixNode.OBSTACLE ? MatrixNode.WALKABLE : MatrixNode.OBSTACLE;
+        matrix[row][col].set(newState);
     }
 
     private boolean isStart(int row, int col) {
-        return matrix[row][col] == MatrixNode.START;
+        return matrix[row][col].get() == MatrixNode.START;
     }
 
     private boolean isFinish(int row, int col) {
-        return matrix[row][col] == MatrixNode.FINISH;
+        return matrix[row][col].get() == MatrixNode.FINISH;
     }
 
-    private MatrixNode[][] createDefaultMatrix() {
+    private ObjectProperty<MatrixNode>[][] createDefaultMatrix() {
         int[][] rawMatrix = parseDefaultMatrixFile();
-        MatrixNode[][] matrix = new MatrixNode[SIZE][SIZE];
+        ObjectProperty<MatrixNode>[][] matrix = (ObjectProperty<MatrixNode>[][]) new ObjectProperty[SIZE][SIZE];
 
         for (int row = 0; row < SIZE; row++) {
             for (int col = 0; col < SIZE; col++) {
-                matrix[row][col] = MatrixNode.fromInt(rawMatrix[row][col]);
+                matrix[row][col] = new SimpleObjectProperty<>(MatrixNode.fromInt(rawMatrix[row][col]));
             }
         }
 
-        matrix[DEFAULT_START_ROW][DEFAULT_START_COL] = MatrixNode.START;
-        matrix[DEFAULT_FINISH_ROW][DEFAULT_FINISH_COL] = MatrixNode.FINISH;
+        matrix[DEFAULT_START_ROW][DEFAULT_START_COL].set(MatrixNode.START);
+        matrix[DEFAULT_FINISH_ROW][DEFAULT_FINISH_COL].set(MatrixNode.FINISH);
 
         return matrix;
     }

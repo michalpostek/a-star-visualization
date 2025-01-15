@@ -48,7 +48,7 @@ public class GridController {
 
             gridCell.setOnMouseClicked(event -> {
                 matrixModel.handleCellClick(row, col);
-                gridView.syncGridView(matrixModel.getMatrix());
+                event.consume();
             });
 
             gridCell.setOnDragDetected((MouseEvent event) -> {
@@ -62,7 +62,6 @@ public class GridController {
                 int sourceCol = GridPane.getColumnIndex(source);
 
                 matrixModel.handleCellDrag(sourceRow, sourceCol, row, col);
-                gridView.syncGridView(matrixModel.getMatrix());
                 event.consume();
             });
         });
