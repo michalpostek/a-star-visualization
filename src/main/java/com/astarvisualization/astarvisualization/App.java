@@ -14,6 +14,7 @@ public class App extends Application {
         appContainer.getChildren().add(controller.getView());
 
         Scene scene = new Scene(appContainer, 600, 600);
+        controller.registerSceneEventHandlers(scene);
 
         stage.setTitle("A* search algorithm visualization");
         stage.setScene(scene);

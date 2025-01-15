@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class MatrixModel {
+    private PathFindingState state = PathFindingState.CUSTOMIZING;
     private static final int SIZE = 20;
     private static final int DEFAULT_START_ROW = SIZE - 1;
     private static final int DEFAULT_START_COL = 0;
@@ -21,7 +22,19 @@ public class MatrixModel {
         return matrix;
     }
 
-    public void swapNodes(int sourceRow, int sourceCol, int targetRow, int targetCol) {
+    public boolean hasFinished() {
+        return state == PathFindingState.COMPLETED || state == PathFindingState.FAILED;
+    }
+
+    public void runPathFinding() {
+        state = PathFindingState.RUNNING;
+    }
+
+    public void handleCellDrag(int sourceRow, int sourceCol, int targetRow, int targetCol) {
+        if (state != PathFindingState.CUSTOMIZING) {
+            return;
+        }
+
         MatrixNode sourceNode = matrix[sourceRow][sourceCol];
         MatrixNode targetNode = matrix[targetRow][targetCol];
 
@@ -29,18 +42,21 @@ public class MatrixModel {
         matrix[targetRow][targetCol] = sourceNode;
     }
 
-    public boolean isStart(int row, int col) {
+    public void handleCellClick(int row, int col) {
+        if (state != PathFindingState.CUSTOMIZING || isStart(row, col) || isFinish(row, col)) {
+            return;
+        }
+
+        MatrixNode newState = matrix[row][col] == MatrixNode.OBSTACLE ? MatrixNode.WALKABLE : MatrixNode.OBSTACLE;
+        matrix[row][col] = newState;
+    }
+
+    private boolean isStart(int row, int col) {
         return matrix[row][col] == MatrixNode.START;
     }
 
-    public boolean isFinish(int row, int col) {
+    private boolean isFinish(int row, int col) {
         return matrix[row][col] == MatrixNode.FINISH;
-    }
-
-    public void toggleObstacle(int row, int col) {
-        MatrixNode newState = matrix[row][col] == MatrixNode.OBSTACLE ? MatrixNode.WALKABLE : MatrixNode.OBSTACLE;
-
-        matrix[row][col] = newState;
     }
 
     private MatrixNode[][] createDefaultMatrix() {

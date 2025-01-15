@@ -2,6 +2,7 @@ package com.astarvisualization.astarvisualization.controller;
 
 import com.astarvisualization.astarvisualization.model.MatrixModel;
 import com.astarvisualization.astarvisualization.view.GridView;
+import javafx.scene.Scene;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Rectangle;
@@ -20,6 +21,25 @@ public class GridController {
         return this.gridView.getGridPane();
     }
 
+    public void registerSceneEventHandlers(Scene scene) {
+        scene.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.SPACE) {
+                handleRunPathFinding();
+            }
+        });
+    }
+
+    private void handleRunPathFinding() {
+        matrixModel.runPathFinding();
+
+        if (matrixModel.hasFinished()) {
+//                    TODO handle
+            return;
+        }
+
+//        TODO listen for new finish point - then run again
+    }
+
     private void registerGridViewEventHandlers() {
         gridView.getGridPane().getChildren().forEach(node -> {
             int row = GridPane.getRowIndex(node);
@@ -27,11 +47,7 @@ public class GridController {
             Rectangle gridCell = gridView.getCell(row, col);
 
             gridCell.setOnMouseClicked(event -> {
-                if (matrixModel.isStart(row, col) || matrixModel.isFinish(row, col)) {
-                    return;
-                }
-
-                matrixModel.toggleObstacle(row, col);
+                matrixModel.handleCellClick(row, col);
                 gridView.syncGridView(matrixModel.getMatrix());
             });
 
@@ -45,7 +61,7 @@ public class GridController {
                 int sourceRow = GridPane.getRowIndex(source);
                 int sourceCol = GridPane.getColumnIndex(source);
 
-                matrixModel.swapNodes(sourceRow, sourceCol, row, col);
+                matrixModel.handleCellDrag(sourceRow, sourceCol, row, col);
                 gridView.syncGridView(matrixModel.getMatrix());
                 event.consume();
             });
