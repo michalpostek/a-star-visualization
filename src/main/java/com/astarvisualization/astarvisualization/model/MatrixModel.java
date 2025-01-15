@@ -5,8 +5,6 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -66,6 +64,7 @@ public class MatrixModel {
 
     private ObjectProperty<MatrixNode>[][] createDefaultMatrix() {
         int[][] rawMatrix = parseDefaultMatrixFile();
+        @SuppressWarnings("unchecked")
         ObjectProperty<MatrixNode>[][] matrix = (ObjectProperty<MatrixNode>[][]) new ObjectProperty[SIZE][SIZE];
 
         for (int row = 0; row < SIZE; row++) {
