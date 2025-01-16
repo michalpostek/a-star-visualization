@@ -13,7 +13,7 @@ public class PathFinder {
         this.matrix = copyMatrix(matrix);
     }
 
-    public ArrayList<Step> getSteps() throws Exception {
+    public PathFinderResult getSteps() throws Exception {
         int counter = 0;
 
         PriorityQueue<Node> openList = new PriorityQueue<>(Comparator
@@ -34,7 +34,7 @@ public class PathFinder {
             if (isFinish(currentNode.row, currentNode.col)) {
                 currentNode.getPath().forEach((Node node) -> addStep(node.row, node.col, MatrixNode.FINAL_PATH));
 
-                return steps;
+                return new PathFinderResult(steps, true);
             }
 
             matrix[currentNode.row][currentNode.col] = MatrixNode.CLOSED_LIST;
@@ -61,7 +61,7 @@ public class PathFinder {
             }
         }
 
-        return steps;
+        return new PathFinderResult(steps, false);
     }
 
     private void addStep(int row, int col, MatrixNode matrixNode) {

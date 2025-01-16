@@ -5,12 +5,12 @@ import com.astarvisualization.astarvisualization.view.GridView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
-import javafx.scene.input.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-
-import java.util.ArrayList;
 
 public class GridController {
     private PathFindingState state = PathFindingState.CUSTOMIZING;
@@ -50,22 +50,15 @@ public class GridController {
     private void handleRunPathFinding() throws Exception {
         state = PathFindingState.RUNNING;
         PathFinder pathFinder = new PathFinder(matrixModel.getMatrix());
-        ArrayList<Step> steps = pathFinder.getSteps();
-        boolean foundPath = steps.get(steps.size() - 1).matrixNode() == MatrixNode.FINAL_PATH;
-        animateSteps(steps);
-
-        if (foundPath) {
-            state = PathFindingState.COMPLETED;
-        } else {
-            state = PathFindingState.FAILED;
-        }
+        PathFinderResult result = pathFinder.getSteps();
+        runAnimationAndUpdateState(result);
     }
 
-    private void animateSteps(ArrayList<Step> steps) {
+    private void runAnimationAndUpdateState(PathFinderResult result) {
         Timeline timeline = new Timeline();
 
         int offset = 0;
-        for (Step step : steps) {
+        for (Step step : result.steps()) {
             KeyFrame keyFrame = new KeyFrame(Duration.seconds(offset++ * 0.01), event -> {
                 matrixModel.updateCell(step.row(), step.col(), step.matrixNode());
                 gridView.syncGridView(matrixModel.getMatrix());
@@ -75,6 +68,13 @@ public class GridController {
 
         timeline.setCycleCount(1);
         timeline.play();
+        timeline.setOnFinished(event -> {
+            if (result.foundPath()) {
+                state = PathFindingState.COMPLETED;
+            } else {
+                state = PathFindingState.FAILED;
+            }
+        });
     }
 
     private void registerGridViewEventHandlers() {
