@@ -1,13 +1,19 @@
 package com.astarvisualization.astarvisualization.controller;
 
-import com.astarvisualization.astarvisualization.model.MatrixModel;
+import com.astarvisualization.astarvisualization.model.*;
 import com.astarvisualization.astarvisualization.view.GridView;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
+
+import java.util.ArrayList;
 
 public class GridController {
+    private PathFindingState state = PathFindingState.CUSTOMIZING;
     private final MatrixModel matrixModel;
     private final GridView gridView;
 
@@ -24,20 +30,50 @@ public class GridController {
     public void registerSceneEventHandlers(Scene scene) {
         scene.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.SPACE) {
-                handleRunPathFinding();
+                if (state == PathFindingState.COMPLETED) {
+                    matrixModel.clearAnimation();
+                    state = PathFindingState.CUSTOMIZING;
+
+                    return;
+                }
+
+                try {
+                    handleRunPathFinding();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
 
-    private void handleRunPathFinding() {
-        matrixModel.runPathFinding();
+    private void handleRunPathFinding() throws Exception {
+        state = PathFindingState.RUNNING;
+        PathFinder pathFinder = new PathFinder(matrixModel.unwrapMatrix());
+        ArrayList<Step> steps = pathFinder.getSteps();
+        boolean foundPath = steps.get(steps.size() - 1).matrixNode() == MatrixNode.FINAL_PATH;
+        animateSteps(steps);
 
-        if (matrixModel.hasFinished()) {
-//                    TODO handle
-            return;
+        if (foundPath) {
+            state = PathFindingState.COMPLETED;
+        } else {
+            state = PathFindingState.FAILED;
+        }
+    }
+
+    private void animateSteps(ArrayList<Step> steps) {
+        Timeline timeline = new Timeline();
+
+        int offset = 0;
+        for (Step step : steps) {
+            KeyFrame keyFrame = new KeyFrame(
+                Duration.seconds(offset++ * 0.01),
+                event -> matrixModel.updateCell(step.row(), step.col(), step.matrixNode())
+            );
+            timeline.getKeyFrames().add(keyFrame);
         }
 
-//        TODO listen for new finish point - then run again
+        timeline.setCycleCount(1);
+        timeline.play();
     }
 
     private void registerGridViewEventHandlers() {
@@ -47,7 +83,18 @@ public class GridController {
             Rectangle gridCell = gridView.getCell(row, col);
 
             gridCell.setOnMouseClicked(event -> {
-                matrixModel.handleCellClick(row, col);
+                if (state == PathFindingState.CUSTOMIZING) {
+                    matrixModel.handleCellClick(row, col);
+                } else if (state == PathFindingState.FAILED && gridCell.getFill() == MatrixNode.CLOSED_LIST.getColor()) {
+                    matrixModel.updateFinishCell(row, col);
+                    matrixModel.clearAnimation();
+                    try {
+                        handleRunPathFinding();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
                 event.consume();
             });
 
@@ -57,6 +104,10 @@ public class GridController {
             });
 
             gridCell.setOnMouseDragReleased((MouseDragEvent event) -> {
+                if (state != PathFindingState.CUSTOMIZING) {
+                    return;
+                }
+
                 Rectangle source = (Rectangle) event.getGestureSource();
                 int sourceRow = GridPane.getRowIndex(source);
                 int sourceCol = GridPane.getColumnIndex(source);

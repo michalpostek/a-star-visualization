@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 public class App extends Application {
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws Exception {
         VBox appContainer = new VBox(20);
         GridController controller = new GridController();
         appContainer.getChildren().add(controller.getView());

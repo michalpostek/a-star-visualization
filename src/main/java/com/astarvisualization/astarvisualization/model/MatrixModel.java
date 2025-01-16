@@ -2,14 +2,13 @@ package com.astarvisualization.astarvisualization.model;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.paint.Material;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 public class MatrixModel {
-    private PathFindingState state = PathFindingState.CUSTOMIZING;
     private static final int SIZE = 20;
     private static final int DEFAULT_START_ROW = SIZE - 1;
     private static final int DEFAULT_START_COL = 0;
@@ -25,33 +24,65 @@ public class MatrixModel {
         return matrix;
     }
 
-    public boolean hasFinished() {
-        return state == PathFindingState.COMPLETED || state == PathFindingState.FAILED;
+    public void clearAnimation() {
+        for (int row = 0; row < SIZE; row++) {
+            for (int col = 0; col < SIZE; col++) {
+                if (matrix[row][col].get() == MatrixNode.OPEN_LIST || matrix[row][col].get() == MatrixNode.CLOSED_LIST || matrix[row][col].get() == MatrixNode.FINAL_PATH) {
+                    matrix[row][col].set(MatrixNode.WALKABLE);
+                }
+            }
+        }
     }
 
-    public void runPathFinding() {
-        state = PathFindingState.RUNNING;
+    public void updateFinishCell(int newFinishRow, int newFinishCol) {
+        for (int row = 0; row < SIZE; row++) {
+            for (int col = 0; col < SIZE; col++) {
+                if (matrix[row][col].get() == MatrixNode.FINISH) {
+                    handleCellDrag(row, col, newFinishRow, newFinishCol);
+                }
+            }
+        }
     }
 
-    public void handleCellDrag(int sourceRow, int sourceCol, int targetRow, int targetCol) {
-        if (state != PathFindingState.CUSTOMIZING) {
+    public void updateCell(int row, int col, MatrixNode matrixNode) {
+        if (isStart(row, col) || isFinish(row, col)) {
             return;
         }
 
+        matrix[row][col].set(matrixNode);
+    }
+
+    public void handleCellDrag(int sourceRow, int sourceCol, int targetRow, int targetCol) {
         MatrixNode sourceNode = matrix[sourceRow][sourceCol].get();
         MatrixNode targetNode = matrix[targetRow][targetCol].get();
+
+        if (sourceNode == MatrixNode.WALKABLE || targetNode == MatrixNode.START || targetNode == MatrixNode.FINISH) {
+            return;
+        }
 
         matrix[sourceRow][sourceCol].set(targetNode);
         matrix[targetRow][targetCol].set(sourceNode);
     }
 
     public void handleCellClick(int row, int col) {
-        if (state != PathFindingState.CUSTOMIZING || isStart(row, col) || isFinish(row, col)) {
+        if (isStart(row, col) || isFinish(row, col)) {
             return;
         }
 
         MatrixNode newState = matrix[row][col].get() == MatrixNode.OBSTACLE ? MatrixNode.WALKABLE : MatrixNode.OBSTACLE;
         matrix[row][col].set(newState);
+    }
+
+    public MatrixNode[][] unwrapMatrix() {
+        MatrixNode[][] matrix = new MatrixNode[SIZE][SIZE];
+
+        for (int row = 0; row < SIZE; row++) {
+            for (int col = 0; col < SIZE; col++) {
+                matrix[row][col] = this.matrix[row][col].get();
+            }
+        }
+
+        return matrix;
     }
 
     private boolean isStart(int row, int col) {
