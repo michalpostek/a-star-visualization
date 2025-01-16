@@ -2,7 +2,8 @@ package com.astarvisualization.astarvisualization.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.Objects;
+import java.util.Scanner;
 
 public class MatrixModel {
     private static final int SIZE = 20;
@@ -30,55 +31,35 @@ public class MatrixModel {
         }
     }
 
-    public void updateFinishCell(int newFinishRow, int newFinishCol) {
+    public void updateFinishNode(int newFinishRow, int newFinishCol) {
         for (int row = 0; row < SIZE; row++) {
             for (int col = 0; col < SIZE; col++) {
-                if (matrix[row][col] == MatrixNode.FINISH) {
-                    handleCellDrag(row, col, newFinishRow, newFinishCol);
+                if (getNode(row, col) == MatrixNode.FINISH) {
+                    swapNodes(row, col, newFinishRow, newFinishCol);
                 }
             }
         }
     }
 
-    public MatrixNode getCell(int row, int col) {
+    public MatrixNode getNode(int row, int col) {
         return matrix[row][col];
     }
 
-    public void updateCell(int row, int col, MatrixNode matrixNode) {
-        if (isStart(row, col) || isFinish(row, col)) {
-            return;
-        }
-
+    public void updateNode(int row, int col, MatrixNode matrixNode) {
         matrix[row][col] = matrixNode;
     }
 
-    public void handleCellDrag(int sourceRow, int sourceCol, int targetRow, int targetCol) {
+    public void swapNodes(int sourceRow, int sourceCol, int targetRow, int targetCol) {
         MatrixNode sourceNode = matrix[sourceRow][sourceCol];
         MatrixNode targetNode = matrix[targetRow][targetCol];
-
-        if (sourceNode == MatrixNode.WALKABLE || targetNode == MatrixNode.START || targetNode == MatrixNode.FINISH) {
-            return;
-        }
 
         matrix[sourceRow][sourceCol] = targetNode;
         matrix[targetRow][targetCol] = sourceNode;
     }
 
-    public void handleCellClick(int row, int col) {
-        if (isStart(row, col) || isFinish(row, col)) {
-            return;
-        }
-
+    public void toggleObstacle(int row, int col) {
         MatrixNode newState = matrix[row][col] == MatrixNode.OBSTACLE ? MatrixNode.WALKABLE : MatrixNode.OBSTACLE;
         matrix[row][col] = newState;
-    }
-
-    private boolean isStart(int row, int col) {
-        return matrix[row][col] == MatrixNode.START;
-    }
-
-    private boolean isFinish(int row, int col) {
-        return matrix[row][col] == MatrixNode.FINISH;
     }
 
     private MatrixNode[][] createDefaultMatrix() {

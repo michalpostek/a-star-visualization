@@ -60,14 +60,19 @@ public class GridController {
         int offset = 0;
         for (Step step : result.steps()) {
             KeyFrame keyFrame = new KeyFrame(Duration.seconds(offset++ * 0.01), event -> {
-                matrixModel.updateCell(step.row(), step.col(), step.matrixNode());
+                MatrixNode matrixNode = matrixModel.getNode(step.row(), step.col());
+
+                if (matrixNode == MatrixNode.START || matrixNode == MatrixNode.FINISH) {
+                    return;
+                }
+
+                matrixModel.updateNode(step.row(), step.col(), step.matrixNode());
                 gridView.syncGridView(matrixModel.getMatrix());
             });
             timeline.getKeyFrames().add(keyFrame);
         }
 
         timeline.setCycleCount(1);
-        timeline.play();
         timeline.setOnFinished(event -> {
             if (result.foundPath()) {
                 state = State.COMPLETED;
@@ -75,6 +80,7 @@ public class GridController {
                 state = State.FAILED;
             }
         });
+        timeline.play();
     }
 
     private void registerGridViewEventHandlers() {
@@ -85,10 +91,16 @@ public class GridController {
 
             gridCell.setOnMouseClicked(event -> {
                 if (state == State.CUSTOMIZING) {
-                    matrixModel.handleCellClick(row, col);
+                    MatrixNode targetNode = matrixModel.getNode(row, col);
+
+                    if (targetNode == MatrixNode.START || targetNode == MatrixNode.FINISH) {
+                        return;
+                    }
+
+                    matrixModel.toggleObstacle(row, col);
                     gridView.syncGridView(matrixModel.getMatrix());
-                } else if (state == State.FAILED && matrixModel.getCell(row, col) == MatrixNode.CLOSED_LIST) {
-                    matrixModel.updateFinishCell(row, col);
+                } else if (state == State.FAILED && matrixModel.getNode(row, col) == MatrixNode.CLOSED_LIST) {
+                    matrixModel.updateFinishNode(row, col);
                     matrixModel.clearAnimation();
                     gridView.syncGridView(matrixModel.getMatrix());
                     try {
@@ -115,7 +127,14 @@ public class GridController {
                 int sourceRow = GridPane.getRowIndex(source);
                 int sourceCol = GridPane.getColumnIndex(source);
 
-                matrixModel.handleCellDrag(sourceRow, sourceCol, row, col);
+                MatrixNode sourceNode = matrixModel.getNode(sourceRow, sourceCol);
+                MatrixNode targetNode = matrixModel.getNode(row, col);
+
+                if (sourceNode == MatrixNode.WALKABLE || targetNode == MatrixNode.START || targetNode == MatrixNode.FINISH) {
+                    return;
+                }
+
+                matrixModel.swapNodes(sourceRow, sourceCol, row, col);
                 gridView.syncGridView(matrixModel.getMatrix());
                 event.consume();
             });
