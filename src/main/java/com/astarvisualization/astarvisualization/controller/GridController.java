@@ -32,6 +32,7 @@ public class GridController {
             if (keyEvent.getCode() == KeyCode.SPACE) {
                 if (state == PathFindingState.COMPLETED) {
                     matrixModel.clearAnimation();
+                    gridView.syncGridView(matrixModel.getMatrix());
                     state = PathFindingState.CUSTOMIZING;
 
                     return;
@@ -48,7 +49,7 @@ public class GridController {
 
     private void handleRunPathFinding() throws Exception {
         state = PathFindingState.RUNNING;
-        PathFinder pathFinder = new PathFinder(matrixModel.unwrapMatrix());
+        PathFinder pathFinder = new PathFinder(matrixModel.getMatrix());
         ArrayList<Step> steps = pathFinder.getSteps();
         boolean foundPath = steps.get(steps.size() - 1).matrixNode() == MatrixNode.FINAL_PATH;
         animateSteps(steps);
@@ -65,15 +66,18 @@ public class GridController {
 
         int offset = 0;
         for (Step step : steps) {
-            KeyFrame keyFrame = new KeyFrame(
-                Duration.seconds(offset++ * 0.01),
-                event -> matrixModel.updateCell(step.row(), step.col(), step.matrixNode())
-            );
+            KeyFrame keyFrame = new KeyFrame(Duration.seconds(offset++ * 0.01), event -> {
+                matrixModel.updateCell(step.row(), step.col(), step.matrixNode());
+                gridView.syncGridView(matrixModel.getMatrix());
+            });
             timeline.getKeyFrames().add(keyFrame);
         }
 
         timeline.setCycleCount(1);
         timeline.play();
+        timeline.setOnFinished(event -> {
+            state = PathFindingState.COMPLETED;
+        });
     }
 
     private void registerGridViewEventHandlers() {
@@ -85,9 +89,11 @@ public class GridController {
             gridCell.setOnMouseClicked(event -> {
                 if (state == PathFindingState.CUSTOMIZING) {
                     matrixModel.handleCellClick(row, col);
+                    gridView.syncGridView(matrixModel.getMatrix());
                 } else if (state == PathFindingState.FAILED && gridCell.getFill() == MatrixNode.CLOSED_LIST.getColor()) {
                     matrixModel.updateFinishCell(row, col);
                     matrixModel.clearAnimation();
+                    gridView.syncGridView(matrixModel.getMatrix());
                     try {
                         handleRunPathFinding();
                     } catch (Exception e) {
@@ -113,6 +119,7 @@ public class GridController {
                 int sourceCol = GridPane.getColumnIndex(source);
 
                 matrixModel.handleCellDrag(sourceRow, sourceCol, row, col);
+                gridView.syncGridView(matrixModel.getMatrix());
                 event.consume();
             });
         });

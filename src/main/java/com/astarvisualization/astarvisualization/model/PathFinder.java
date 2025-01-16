@@ -1,9 +1,6 @@
 package com.astarvisualization.astarvisualization.model;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class PathFinder {
     private static final int[][] MOVES = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
@@ -13,7 +10,7 @@ public class PathFinder {
 
     public PathFinder(MatrixNode[][] matrix) {
         this.steps = new ArrayList<>();
-        this.matrix = matrix;
+        this.matrix = copyMatrix(matrix);
     }
 
     public ArrayList<Step> getSteps() throws Exception {
@@ -146,5 +143,11 @@ public class PathFinder {
         }
 
         return targetNode;
+    }
+
+    private static MatrixNode[][] copyMatrix(MatrixNode[][] originalMatrix) {
+        return Arrays.stream(originalMatrix)
+            .map(MatrixNode[]::clone)
+            .toArray(MatrixNode[][]::new);
     }
 }
