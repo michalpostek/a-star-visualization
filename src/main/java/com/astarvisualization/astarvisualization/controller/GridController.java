@@ -75,9 +75,6 @@ public class GridController {
 
         timeline.setCycleCount(1);
         timeline.play();
-        timeline.setOnFinished(event -> {
-            state = PathFindingState.COMPLETED;
-        });
     }
 
     private void registerGridViewEventHandlers() {
@@ -90,7 +87,7 @@ public class GridController {
                 if (state == PathFindingState.CUSTOMIZING) {
                     matrixModel.handleCellClick(row, col);
                     gridView.syncGridView(matrixModel.getMatrix());
-                } else if (state == PathFindingState.FAILED && gridCell.getFill() == MatrixNode.CLOSED_LIST.getColor()) {
+                } else if (state == PathFindingState.FAILED && matrixModel.getCell(row, col) == MatrixNode.CLOSED_LIST) {
                     matrixModel.updateFinishCell(row, col);
                     matrixModel.clearAnimation();
                     gridView.syncGridView(matrixModel.getMatrix());

@@ -8,7 +8,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astarvisualization/astarvisualization/controller/GridController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astarvisualization/astarvisualization/controller/GridController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astarvisualization/astarvisualization/model/MatrixModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astarvisualization/astarvisualization/model/MatrixModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/astarvisualization/astarvisualization/model/PathFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astarvisualization/astarvisualization/model/PathFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/astarvisualization/astarvisualization/model/MatrixNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astarvisualization/astarvisualization/model/MatrixNode.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/astarvisualization/astarvisualization/view/GridView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/astarvisualization/astarvisualization/view/GridView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -99,7 +99,7 @@
       <workItem from="1736686088372" duration="734000" />
       <workItem from="1736802922910" duration="11782000" />
       <workItem from="1736965031294" duration="444000" />
-      <workItem from="1737042377714" duration="2058000" />
+      <workItem from="1737042377714" duration="2402000" />
     </task>
     <servers />
   </component>

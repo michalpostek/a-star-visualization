@@ -21,7 +21,7 @@ public class GridView {
         for (int row = 0; row < matrix.length; row++) {
             for (int col = 0; col < matrix[row].length; col++) {
                 Rectangle gridCell = getCell(row, col);
-                gridCell.setFill(matrix[row][col].getColor());
+                gridCell.setFill(getCellColor(matrix[row][col]));
             }
         }
     }
@@ -44,12 +44,24 @@ public class GridView {
                 Rectangle gridCell = new Rectangle(GRID_CELL_SIZE, GRID_CELL_SIZE);
 
                 gridCell.setStroke(Color.WHITE);
-                gridCell.setFill(matrix[row][col].getColor());
+                gridCell.setFill(getCellColor(matrix[row][col]));
 
                 gridPane.add(gridCell, col, row);
             }
         }
 
         return gridPane;
+    }
+
+    private static Color getCellColor(MatrixNode matrixNode) {
+        return switch (matrixNode) {
+            case WALKABLE -> Color.LIGHTGREY;
+            case START -> Color.GREEN;
+            case FINISH -> Color.RED;
+            case OPEN_LIST -> Color.BLUE;
+            case CLOSED_LIST -> Color.ORANGE;
+            case OBSTACLE -> Color.BLACK;
+            case FINAL_PATH -> Color.YELLOW;
+        };
     }
 }

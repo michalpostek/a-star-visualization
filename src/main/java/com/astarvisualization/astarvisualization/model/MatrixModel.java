@@ -1,8 +1,5 @@
 package com.astarvisualization.astarvisualization.model;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -41,6 +38,10 @@ public class MatrixModel {
                 }
             }
         }
+    }
+
+    public MatrixNode getCell(int row, int col) {
+        return matrix[row][col];
     }
 
     public void updateCell(int row, int col, MatrixNode matrixNode) {

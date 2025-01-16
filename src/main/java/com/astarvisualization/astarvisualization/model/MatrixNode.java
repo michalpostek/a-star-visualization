@@ -1,31 +1,22 @@
 package com.astarvisualization.astarvisualization.model;
 
-import javafx.scene.paint.Color;
-
 public enum MatrixNode {
-//    FIXME move color away from model
-    WALKABLE(0, Color.LIGHTGREY),
-    START(1, Color.GREEN),
-    FINISH(2, Color.RED),
-    OPEN_LIST(3, Color.BLUE),
-    CLOSED_LIST(4, Color.ORANGE),
-    OBSTACLE(5, Color.BLACK),
-    FINAL_PATH(6, Color.YELLOW);
+    WALKABLE(0),
+    START(1),
+    FINISH(2),
+    OPEN_LIST(3),
+    CLOSED_LIST(4),
+    OBSTACLE(5),
+    FINAL_PATH(6);
 
     private final int value;
-    private final Color color;
 
-    MatrixNode(int value, Color color) {
+    MatrixNode(int value) {
         this.value = value;
-        this.color = color;
     }
 
     public int getValue() {
         return value;
-    }
-
-    public Color getColor() {
-        return color;
     }
 
     public static MatrixNode fromInt(int i) {
