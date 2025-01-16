@@ -13,7 +13,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 public class GridController {
-    private PathFindingState state = PathFindingState.CUSTOMIZING;
+    private State state = State.CUSTOMIZING;
     private final MatrixModel matrixModel;
     private final GridView gridView;
 
@@ -30,10 +30,10 @@ public class GridController {
     public void registerSceneEventHandlers(Scene scene) {
         scene.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.SPACE) {
-                if (state == PathFindingState.COMPLETED) {
+                if (state == State.COMPLETED) {
                     matrixModel.clearAnimation();
                     gridView.syncGridView(matrixModel.getMatrix());
-                    state = PathFindingState.CUSTOMIZING;
+                    state = State.CUSTOMIZING;
 
                     return;
                 }
@@ -48,7 +48,7 @@ public class GridController {
     }
 
     private void handleRunPathFinding() throws Exception {
-        state = PathFindingState.RUNNING;
+        state = State.RUNNING;
         PathFinder pathFinder = new PathFinder(matrixModel.getMatrix());
         PathFinderResult result = pathFinder.getSteps();
         runAnimationAndUpdateState(result);
@@ -70,9 +70,9 @@ public class GridController {
         timeline.play();
         timeline.setOnFinished(event -> {
             if (result.foundPath()) {
-                state = PathFindingState.COMPLETED;
+                state = State.COMPLETED;
             } else {
-                state = PathFindingState.FAILED;
+                state = State.FAILED;
             }
         });
     }
@@ -84,10 +84,10 @@ public class GridController {
             Rectangle gridCell = gridView.getCell(row, col);
 
             gridCell.setOnMouseClicked(event -> {
-                if (state == PathFindingState.CUSTOMIZING) {
+                if (state == State.CUSTOMIZING) {
                     matrixModel.handleCellClick(row, col);
                     gridView.syncGridView(matrixModel.getMatrix());
-                } else if (state == PathFindingState.FAILED && matrixModel.getCell(row, col) == MatrixNode.CLOSED_LIST) {
+                } else if (state == State.FAILED && matrixModel.getCell(row, col) == MatrixNode.CLOSED_LIST) {
                     matrixModel.updateFinishCell(row, col);
                     matrixModel.clearAnimation();
                     gridView.syncGridView(matrixModel.getMatrix());
@@ -107,7 +107,7 @@ public class GridController {
             });
 
             gridCell.setOnMouseDragReleased((MouseDragEvent event) -> {
-                if (state != PathFindingState.CUSTOMIZING) {
+                if (state != State.CUSTOMIZING) {
                     return;
                 }
 
