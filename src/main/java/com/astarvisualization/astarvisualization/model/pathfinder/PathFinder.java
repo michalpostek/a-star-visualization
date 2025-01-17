@@ -1,4 +1,6 @@
-package com.astarvisualization.astarvisualization.model;
+package com.astarvisualization.astarvisualization.model.pathfinder;
+
+import com.astarvisualization.astarvisualization.model.MatrixNode;
 
 import java.util.*;
 
@@ -6,7 +8,7 @@ public class PathFinder {
     private static final int[][] MOVES = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
     private static final int MOVE_COST = 1;
     private final MatrixNode[][] matrix;
-    private final ArrayList<Step> steps;
+    private final ArrayList<PathFindingStep> steps;
 
     public PathFinder(MatrixNode[][] matrix) {
         this.steps = new ArrayList<>();
@@ -65,7 +67,7 @@ public class PathFinder {
     }
 
     private void addStep(int row, int col, MatrixNode matrixNode) {
-        Step step = new Step(row, col, matrixNode);
+        PathFindingStep step = new PathFindingStep(row, col, matrixNode);
         steps.add(step);
     }
 

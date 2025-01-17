@@ -1,4 +1,4 @@
-package com.astarvisualization.astarvisualization.model;
+package com.astarvisualization.astarvisualization.model.pathfinder;
 
 import java.util.ArrayList;
 

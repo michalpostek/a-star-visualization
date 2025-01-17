@@ -1,6 +1,10 @@
 package com.astarvisualization.astarvisualization.controller;
 
-import com.astarvisualization.astarvisualization.model.*;
+import com.astarvisualization.astarvisualization.model.MatrixModel;
+import com.astarvisualization.astarvisualization.model.MatrixNode;
+import com.astarvisualization.astarvisualization.model.pathfinder.PathFinder;
+import com.astarvisualization.astarvisualization.model.pathfinder.PathFinderResult;
+import com.astarvisualization.astarvisualization.model.pathfinder.PathFindingStep;
 import com.astarvisualization.astarvisualization.view.GridView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -58,7 +62,7 @@ public class GridController {
         Timeline timeline = new Timeline();
 
         int offset = 0;
-        for (Step step : result.steps()) {
+        for (PathFindingStep step : result.steps()) {
             KeyFrame keyFrame = new KeyFrame(Duration.seconds(offset++ * 0.01), event -> {
                 MatrixNode matrixNode = matrixModel.getNode(step.row(), step.col());
 
