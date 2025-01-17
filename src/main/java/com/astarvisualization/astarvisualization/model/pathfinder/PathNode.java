@@ -2,12 +2,12 @@ package com.astarvisualization.astarvisualization.model.pathfinder;
 
 import java.util.ArrayList;
 
-public class Node {
+public class PathNode {
     int row, col, g, order;
     double h, f;
-    Node previous;
+    PathNode previous;
 
-    public Node(int row, int col, int g, double h, Node previous, int order) {
+    public PathNode(int row, int col, int g, double h, PathNode previous, int order) {
         this.row = row;
         this.col = col;
         this.g = g;
@@ -17,9 +17,9 @@ public class Node {
         this.order = order;
     }
 
-    public ArrayList<Node> getPath() {
-        ArrayList<Node> path = new ArrayList<>();
-        Node current = this;
+    public ArrayList<PathNode> getPath() {
+        ArrayList<PathNode> path = new ArrayList<>();
+        PathNode current = this;
 
         while (current != null) {
             path.add(0, current);

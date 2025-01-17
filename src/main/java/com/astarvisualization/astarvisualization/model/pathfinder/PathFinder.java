@@ -18,23 +18,23 @@ public class PathFinder {
     public PathFinderResult getSteps() throws Exception {
         int counter = 0;
 
-        PriorityQueue<Node> openList = new PriorityQueue<>(Comparator
-                .comparingDouble((Node node) -> node.f)
-                .thenComparingInt((Node node) -> -node.order)
+        PriorityQueue<PathNode> openList = new PriorityQueue<>(Comparator
+                .comparingDouble((PathNode node) -> node.f)
+                .thenComparingInt((PathNode node) -> -node.order)
         );
 
         int startRow = getStartRow();
         int startCol = getStartCol();
 
-        Node startNode = new Node(startRow, startCol, 0, getEuclideanDistance(startRow, startCol), null, counter++);
+        PathNode startNode = new PathNode(startRow, startCol, 0, getEuclideanDistance(startRow, startCol), null, counter++);
         openList.add(startNode);
         matrix[startRow][startCol] = MatrixNode.OPEN_LIST;
 
         while (!openList.isEmpty()) {
-            Node currentNode = openList.poll();
+            PathNode currentNode = openList.poll();
 
             if (isFinish(currentNode.row, currentNode.col)) {
-                currentNode.getPath().forEach((Node node) -> addStep(node.row, node.col, MatrixNode.FINAL_PATH));
+                currentNode.getPath().forEach((PathNode node) -> addStep(node.row, node.col, MatrixNode.FINAL_PATH));
 
                 return new PathFinderResult(steps, true);
             }
@@ -50,8 +50,8 @@ public class PathFinder {
                     continue;
                 }
 
-                Node node = new Node(newRow, newCol, currentNode.g + MOVE_COST, getEuclideanDistance(newRow, newCol), currentNode, counter++);
-                Optional<Node> targetNode = getTargetNode(openList, newRow, newCol);
+                PathNode node = new PathNode(newRow, newCol, currentNode.g + MOVE_COST, getEuclideanDistance(newRow, newCol), currentNode, counter++);
+                Optional<PathNode> targetNode = getTargetNode(openList, newRow, newCol);
 
                 if (targetNode.isEmpty()) {
                     openList.add(node);
@@ -135,10 +135,10 @@ public class PathFinder {
         return matrix[row][col] == MatrixNode.FINISH;
     }
 
-    private static Optional<Node> getTargetNode(PriorityQueue<Node> openList, int row, int col) {
-        Optional<Node> targetNode = Optional.empty();
+    private static Optional<PathNode> getTargetNode(PriorityQueue<PathNode> openList, int row, int col) {
+        Optional<PathNode> targetNode = Optional.empty();
 
-        for (Node node : openList) {
+        for (PathNode node : openList) {
             if (row == node.row && col == node.col) {
                 targetNode = Optional.of(node);
             }
