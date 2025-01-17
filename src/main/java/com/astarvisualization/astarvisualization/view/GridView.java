@@ -8,8 +8,10 @@ import javafx.scene.shape.Rectangle;
 public class GridView {
     private final GridPane gridPane;
     private final static int GRID_CELL_SIZE = 20;
+    private final MatrixNode[][] matrix;
 
     public GridView(MatrixNode[][] matrix) {
+        this.matrix = matrix;
         this.gridPane = createGridPaneFromMatrix(matrix);
     }
 
@@ -17,7 +19,7 @@ public class GridView {
         return gridPane;
     }
 
-    public void syncGridView(MatrixNode[][] matrix) {
+    public void syncGridView() {
         for (int row = 0; row < matrix.length; row++) {
             for (int col = 0; col < matrix[row].length; col++) {
                 Rectangle gridCell = getCell(row, col);

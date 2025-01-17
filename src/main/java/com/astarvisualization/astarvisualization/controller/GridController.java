@@ -43,7 +43,7 @@ public class GridController {
             if (keyEvent.getCode() == KeyCode.SPACE) {
                 if (state == State.COMPLETED) {
                     matrixModel.clearAnimation();
-                    gridView.syncGridView(matrixModel.getMatrix());
+                    gridView.syncGridView();
                     updateState(State.CUSTOMIZING);
                 } else if (state == State.CUSTOMIZING) {
                     try {
@@ -76,7 +76,7 @@ public class GridController {
                 }
 
                 matrixModel.updateNode(step.row(), step.col(), step.matrixNode());
-                gridView.syncGridView(matrixModel.getMatrix());
+                gridView.syncGridView();
             });
             timeline.getKeyFrames().add(keyFrame);
         }
@@ -107,11 +107,11 @@ public class GridController {
                     }
 
                     matrixModel.toggleObstacle(row, col);
-                    gridView.syncGridView(matrixModel.getMatrix());
+                    gridView.syncGridView();
                 } else if (state == State.FAILED && matrixModel.getNode(row, col) == MatrixNode.CLOSED_LIST) {
                     matrixModel.updateFinishNode(row, col);
                     matrixModel.clearAnimation();
-                    gridView.syncGridView(matrixModel.getMatrix());
+                    gridView.syncGridView();
                     try {
                         handleRunPathFinding();
                     } catch (Exception e) {
@@ -144,7 +144,7 @@ public class GridController {
                 }
 
                 matrixModel.swapNodes(sourceRow, sourceCol, row, col);
-                gridView.syncGridView(matrixModel.getMatrix());
+                gridView.syncGridView();
                 event.consume();
             });
         });
