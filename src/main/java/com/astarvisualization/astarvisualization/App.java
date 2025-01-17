@@ -11,9 +11,10 @@ public class App extends Application {
     public void start(Stage stage) {
         VBox appContainer = new VBox(20);
         GridController controller = new GridController();
-        appContainer.getChildren().add(controller.getView());
+        VBox view = controller.getView();
+        appContainer.getChildren().add(view);
 
-        Scene scene = new Scene(appContainer, 600, 600);
+        Scene scene = new Scene(appContainer, 400, 550);
         controller.registerSceneEventHandlers(scene);
 
         stage.setTitle("A* search algorithm visualization");
