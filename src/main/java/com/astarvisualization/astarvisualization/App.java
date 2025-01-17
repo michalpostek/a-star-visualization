@@ -14,7 +14,7 @@ public class App extends Application {
         VBox view = controller.getView();
         appContainer.getChildren().add(view);
 
-        Scene scene = new Scene(appContainer, 400, 550);
+        Scene scene = new Scene(appContainer, 420, 550);
         controller.registerSceneEventHandlers(scene);
 
         stage.setTitle("A* search algorithm visualization");
