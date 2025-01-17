@@ -5,6 +5,7 @@ import com.astarvisualization.astarvisualization.model.MatrixNode;
 import com.astarvisualization.astarvisualization.model.pathfinder.PathFinder;
 import com.astarvisualization.astarvisualization.model.pathfinder.PathFinderResult;
 import com.astarvisualization.astarvisualization.model.pathfinder.PathFindingStep;
+import com.astarvisualization.astarvisualization.view.ActionPromptView;
 import com.astarvisualization.astarvisualization.view.GridView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -13,6 +14,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
@@ -20,15 +22,20 @@ public class GridController {
     private State state = State.CUSTOMIZING;
     private final MatrixModel matrixModel;
     private final GridView gridView;
+    private final ActionPromptView actionPromptView;
 
     public GridController() {
         matrixModel = new MatrixModel();
         gridView = new GridView(matrixModel.getMatrix());
+        actionPromptView = new ActionPromptView(state);
         registerGridViewEventHandlers();
     }
 
-    public GridPane getView() {
-        return this.gridView.getGridPane();
+    public VBox getView() {
+        VBox container = new VBox(20);
+        container.getChildren().addAll(this.gridView.getGridPane(), this.actionPromptView);
+
+        return container;
     }
 
     public void registerSceneEventHandlers(Scene scene) {
@@ -37,22 +44,20 @@ public class GridController {
                 if (state == State.COMPLETED) {
                     matrixModel.clearAnimation();
                     gridView.syncGridView(matrixModel.getMatrix());
-                    state = State.CUSTOMIZING;
-
-                    return;
-                }
-
-                try {
-                    handleRunPathFinding();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    updateState(State.CUSTOMIZING);
+                } else if (state == State.CUSTOMIZING) {
+                    try {
+                        handleRunPathFinding();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         });
     }
 
     private void handleRunPathFinding() throws Exception {
-        state = State.RUNNING;
+        updateState(State.RUNNING);
         PathFinder pathFinder = new PathFinder(matrixModel.getMatrix());
         PathFinderResult result = pathFinder.getSteps();
         runAnimationAndUpdateState(result);
@@ -79,9 +84,9 @@ public class GridController {
         timeline.setCycleCount(1);
         timeline.setOnFinished(event -> {
             if (result.foundPath()) {
-                state = State.COMPLETED;
+                updateState(State.COMPLETED);
             } else {
-                state = State.FAILED;
+                updateState(State.FAILED);
             }
         });
         timeline.play();
@@ -143,5 +148,10 @@ public class GridController {
                 event.consume();
             });
         });
+    }
+
+    private void updateState(State state) {
+        this.state = state;
+        this.actionPromptView.updateState(state);
     }
 }
